@@ -1,0 +1,296 @@
+class SilkyHUD : BaseStatusBar
+{
+	HUDFont mMinifont;
+	const NOASPECT = 0.833334;
+	
+	// Interpolators used by health and armor displays:
+	DynamicValueInterpolator healthIntr; //health
+	DynamicValueInterpolator armorIntr;	// armor
+	DynamicValueInterpolator overArmorIntr;	// over 100 armor
+	DynamicValueInterpolator overHealthIntr;	// over 100 health
+
+	// Custom drawing functions that block aspect correction
+	// are defined at the bottom.
+
+	override void Init()
+	{
+		super.Init();
+		
+		Font fnt = "MINIFONT";
+		// The '1, 1' at the end defines shadow offset for the numbers.
+		// If you prefer shadowless numbers, just remove everything
+		// after 'true' in this function:
+		mMinifont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), true, 1, 1);
+		
+		healthIntr = DynamicValueInterpolator.Create(0, 0.1, 1, 5);
+		armorIntr = DynamicValueInterpolator.Create(0, 0.1, 1, 5);
+		overArmorIntr = DynamicValueInterpolator.Create(0, 0.1, 1, 5);
+		overHealthIntr = DynamicValueInterpolator.Create(0, 0.1, 1, 5);
+	}
+	
+	override void Draw (int state, double TicFrac) 
+	{
+		Super.Draw (state, TicFrac);
+		
+		if (state == HUD_Fullscreen || state == HUD_Statusbar)
+		{		
+			BeginHUD();
+			DrawLeftCorner();
+			DrawRightCorner();
+			DrawAirSupply();
+		}
+	}
+	
+	// Interpolator values have to be updated in Tick(),
+	// so that they're not tied to framerate:
+	override void Tick()
+	{
+		super.Tick(); // don't forget this, or it'll break a bunch of things
+		
+		// Update the interpolators' values:
+		int healthAmt = CPlayer.mo.health;
+		if (healthIntr)
+		{
+			healthIntr.Update(healthAmt);
+		}
+		if (overHealthIntr)
+		{
+			overHealthIntr.Update(healthAmt - 100);
+		}
+		
+		int armAmt = GetArmorAmount();
+		if (armorIntr)
+		{
+			armorIntr.Update(armAmt);
+		}
+		// If the armor is over 100, we'll use another
+		// interpolator for the second bar and just
+		// deduct 100 from it so that 100-200 armor
+		// is mapped to the values of 0-100:
+		if (overArmorIntr)
+		{
+			overArmorIntr.Update(armAmt - 100);
+		}
+	}
+	
+	
+    TextureID GetMyMugshot(int accuracy)
+    {
+		bool captured = CPlayer.mo.CountInv("SilkyCaptured");
+		bool inSpace = CPlayer.mo.CountInv("SilkyInSpace");
+		
+		string facetex = "";
+		
+		if (captured)
+		{
+			SetMugshotState("Captured");
+		}
+		let face = GetMugShot(accuracy);
+		facetex = TexMan.GetName(face);
+		
+		// If we're in space, replace "STF" with "TES"
+		// in the texture name:
+		if (inSpace)
+		{
+			facetex.Replace("STF", "TES");
+		}
+		
+		// Convert the texture name back to TextureID.
+		// If it's invalid for some reason, return null:
+		face = TexMan.CheckForTexture(facetex);
+		if (!face.IsValid())
+		{
+			face.SetNull();
+		}	
+		
+		return face;
+    }
+	
+	// A position argument is given here in case
+	// you want to move the base position of this corner:
+	void DrawLeftCorner(vector2 pos = (0,0))
+	{
+		NA_DrawImage("CIRCLE", pos, DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT_BOTTOM);
+		
+		// Health
+		vector2 hbarpos = pos + (49, -22);
+		NA_DrawBar("LIFE", "LIFEBAR", healthIntr.GetValue(), 100, hbarpos, 0, false, DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT);
+		if (CPlayer.health > 100)
+		{
+			NA_DrawBar("OVERLIFE", "", overHealthIntr.GetValue(), 100, hbarpos, 0, false, DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT);
+		}
+		NA_DrawString(mMinifont, String.Format("%d",CPlayer.health), pos + (100, -33), DI_SCREEN_LEFT_BOTTOM|DI_TEXT_ALIGN_CENTER, translation:Font.CR_White);
+		
+		// Armor:
+		vector2 armbarpos = pos + (49, -10);
+		NA_DrawBar("ARMORBAR", "", armorIntr.GetValue(), 100, armbarpos, 0, true, DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT);
+		// Over 100 armor:
+		if (GetArmorAmount() > 100)
+		{
+			NA_DrawBar("OVERBAR", "", overArmorIntr.GetValue(), 100, armbarpos, 0, true, DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT);
+		}
+			
+		// Mugshot:
+		NA_DrawTexture(GetMyMugshot(5), pos + (0, -7), DI_SCREEN_LEFT_BOTTOM|DI_ITEM_LEFT_BOTTOM);
+	}
+	
+	void DrawRightCorner(vector2 pos = (0, -3))
+	{		
+		NA_DrawImage("AMMOKEY", pos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_RIGHT_BOTTOM);
+		
+		// Keys
+		// cards:
+		vector2 kpos = pos - (67, 26);
+		if (CPlayer.mo.FindInventory("BlueCard", true))
+			NA_DrawImage("BLUEK", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+		kpos.x += 9;
+		if (CPlayer.mo.FindInventory("RedCard", true))
+			NA_DrawImage("REDK", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+		kpos.x += 9;
+		if (CPlayer.mo.FindInventory("YellowCard", true))
+			NA_DrawImage("YELLOWK", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+		
+		// skulls:
+		kpos = pos - (68, 16);
+		if (CPlayer.mo.FindInventory("BlueSkull", true))
+			NA_DrawImage("BLUES", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+		kpos.x += 10;
+		if (CPlayer.mo.FindInventory("RedSkull", true))
+			NA_DrawImage("REDS", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+		kpos.x += 10;
+		if (CPlayer.mo.FindInventory("YellowSkull", true))
+			NA_DrawImage("YELLOWS", kpos, DI_SCREEN_RIGHT_BOTTOM|DI_ITEM_LEFT_TOP);
+			
+		// Ammo:
+		// GetCurrentAmmo has four return values, get them all:
+		Ammo ammotype1, ammotype2;
+		int ammo1amt, ammo2amt;
+		[ammotype1, ammotype2, ammo1amt, ammo2amt] = GetCurrentAmmo();
+		NA_DrawString(mMinifont, String.Format("%d", ammo1amt), pos + (-20, -24), DI_SCREEN_RIGHT_BOTTOM|DI_TEXT_ALIGN_CENTER);
+	}
+	
+	void DrawAirSupply(vector2 pos = (0, -8), int flags = DI_SCREEN_CENTER_BOTTOM)
+	{
+		if (GetAirTime() < level.airsupply)
+		{
+			NA_DrawBar("AIRSUP", "AIRBAR", GetAirTime(), level.airsupply, pos, 0, false, flags|DI_ITEM_CENTER);
+			NA_DrawString(mMinifont, String.Format("%d", GetAirTime() / TICRATE), pos + (0, -5), flags|DI_TEXT_ALIGN_CENTER, translation:Font.CR_Cyan);
+		}
+	}
+	
+	// ---------------------------------------------------------
+	// 		[JGP] Custom drawing functions that disable the
+	// 		effects of the 'hud_aspectscale' CVar without
+	// 		disabling the ability to change the size of the hud.
+	// 		Hurray for square pixels!
+	// ---------------------------------------------------------
+	
+	// Multiply Y scale and pos of the element by NOASPECT
+	// if 'hud_aspectscale' is true, scaling and moving it down
+	// so that it remains in place and unscaled:
+	
+	void NA_DrawImage(String texture, Vector2 pos, int flags = 0, double Alpha = 1., Vector2 box = (-1, -1), Vector2 scale = (1, 1))
+	{
+		if (CVar.GetCvar('hud_aspectscale', CPlayer).GetBool() == true)
+		{
+			scale.y *= NOASPECT;
+			pos.y *= NOASPECT;
+		}
+		DrawImage(texture, pos, flags, Alpha, box, scale);
+	}
+	
+	void NA_DrawTexture(TextureID texture, Vector2 pos, int flags = 0, double Alpha = 1., Vector2 box = (-1, -1), Vector2 scale = (1, 1))
+	{
+		if (CVar.GetCvar('hud_aspectscale', CPlayer).GetBool() == true)
+		{
+			scale.y *= NOASPECT;
+			pos.y *= NOASPECT;
+		}
+		DrawTexture(texture, pos, flags, Alpha, box, scale);
+	}
+	
+	void NA_DrawString(HUDFont font, String string, Vector2 pos, int flags = 0, int translation = Font.CR_UNTRANSLATED, double Alpha = 1., int wrapwidth = -1, int linespacing = 4, Vector2 scale = (1, 1))
+	{
+		if (CVar.GetCvar('hud_aspectscale', CPlayer).GetBool() == true)
+		{
+			scale.y *= NOASPECT;
+			pos.y *= NOASPECT;
+		}
+		DrawString(font, string, pos, flags, translation, Alpha, wrapwidth, linespacing, scale);
+	}
+	
+	// Since DrawBar is stupid and doesn't support scaling at all,
+	// plus it has a ton of things it has to do, the whole function
+	// is copy-pasted from BaseStatusBar with the necessary changes.
+	// This also allows skipping background graphic, because in
+	// contrast to the default DrawBar, this doesn't force black
+	// Fill in place of the missing background:
+	void NA_DrawBar(String ongfx, String offgfx, double curval, double maxval, Vector2 position, int border, int vertical, int flags = 0, double alpha = 1.0, vector2 scale = (1,1))
+	{
+		// Do the usual thing with Y pos and scale:
+		if (CVar.GetCvar('hud_aspectscale', CPlayer).GetBool() == true) 
+		{
+			position.y *= NOASPECT;
+			scale.y *= NOASPECT;
+		}
+		
+		let ontex = TexMan.CheckForTexture(ongfx, TexMan.TYPE_MiscPatch);
+		if (!ontex.IsValid()) return;
+		let offtex = TexMan.CheckForTexture(offgfx, TexMan.TYPE_MiscPatch);
+
+		// [JGP] Multiply texture by scale:
+		Vector2 texsize = TexMan.GetScaledSize(ontex);
+		texsize.x *= scale.x;
+		texsize.y *= scale.y;
+		[position, flags] = AdjustPosition(position, flags, texsize.X, texsize.Y);
+		
+		double value = (maxval != 0) ? clamp(curval / maxval, 0, 1) : 0;
+		if(border != 0) value = 1. - value;
+		
+		// {cx, cb, cr, cy}
+		double Clip[4];
+		Clip[0] = Clip[1] = Clip[2] = Clip[3] = 0;
+		
+		bool horizontal = !(vertical & SHADER_VERT);
+		bool reverse = !!(vertical & SHADER_REVERSE);
+		double sizeOfImage = (horizontal ? texsize.X - border*2 : texsize.Y - border*2);
+		Clip[(!horizontal) | ((!reverse)<<1)] = sizeOfImage - sizeOfImage *value;
+		
+		// preserve the active clipping rectangle
+		int cx, cy, cw, ch;
+		[cx, cy, cw, ch] = screen.GetClipRect();
+
+		if(border != 0)
+		{
+			for(int i = 0; i < 4; i++) Clip[i] += border;
+
+			//Draw the whole foreground
+			DrawTexture(ontex, position, flags | DI_ITEM_LEFT_TOP, alpha, scale:scale);
+			SetClipRect(position.X + Clip[0], position.Y + Clip[1], texsize.X - Clip[0] - Clip[2], texsize.Y - Clip[1] - Clip[3], flags);
+		}
+
+		// [JGP] Restructure this block: first, check if background
+		// is a valid texture. If not, we do NOT draw Fill because
+		// why the hell would we need that?
+		if (offtex.IsValid())
+		{
+			// [JGP] Scale offtex size just like we did with the
+			// ontex before:
+			Vector2 offTexsize = TexMan.GetScaledSize(offtex);
+			offTexsize.x *= scale.x;
+			offTexsize.y *= scale.y;		
+			if (offTexsize == texsize) 
+			{
+				DrawTexture(offtex, position, flags | DI_ITEM_LEFT_TOP, alpha, scale:scale);
+			}
+		}
+		
+		if (border == 0)
+		{
+			SetClipRect(position.X + Clip[0], position.Y + Clip[1], texsize.X - Clip[0] - Clip[2], texsize.Y - Clip[1] - Clip[3], flags);
+			DrawTexture(ontex, position, flags | DI_ITEM_LEFT_TOP, alpha, scale:scale);
+		}
+		// restore the previous clipping rectangle
+		screen.SetClipRect(cx, cy, cw, ch);
+	}
+}

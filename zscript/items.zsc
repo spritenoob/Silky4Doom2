@@ -1,0 +1,18 @@
+class SilkyItemToken : Inventory abstract
+{
+	Default
+	{
+		Inventory.maxamount 1;
+		+INVENTORY.UNTOSSABLE
+	}
+	
+	override void Tick() 
+	{
+		if (!owner)
+			Destroy();
+	}	
+}
+
+class SilkyInSpace : SilkyItemToken {}
+
+class SilkyCaptured : SilkyItemToken {}

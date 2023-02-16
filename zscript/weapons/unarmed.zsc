@@ -1,0 +1,53 @@
+class Unarmed: Weapon {
+Default
+	{
+	Weapon.Kickback 100;
+	Weapon.SelectionOrder 10;
+	//Obituary "$OB_MPFIST";
+	//Tag "$TAG_FIST";
+	+WEAPON.WIMPY_WEAPON
+	+WEAPON.MELEEWEAPON
+  }
+    States
+	{
+	Ready:
+    PUNG A 1 A_WeaponReady;
+    Loop;
+	
+	Deselect:
+		PUNG A 1 A_Lower;
+		PUNG A 0 A_Lower;
+		Loop;
+	Select:
+		PUNG A 1 A_Raise;
+		PUNG A 0 A_Raise;
+		Loop;
+	Fire:
+		PUNG A 1 Offset(32,48);
+		PUNG A 1 Offset(48,64); 
+		PUNG A 1 Offset(56,72);
+	Hold:
+		PUNG B 1 Offset(-96,56);
+		PUNG B 1 Offset(-64,48); //A_PlaySound("sneak/knife", CHAN_WEAPON, 0.7)
+		PUNG C 1 Offset(-43,43) A_StartSound("silky/melee");
+		PUNG C 1 Offset(-28,39);
+		PUNG C 1 Offset(-19,37);
+		PUNG D 1 Offset(-13,35);
+		PUNG D 0 A_Punch;
+		PUNG D 1 Offset(0,32); //A_CustomPunch(Random(1,11) + 9, true, CPF_PULLIN, "FistPuff", 44.0)
+		PUNG D 0 A_Jump(256,2);
+		PUNG D 1 Offset(0,32); //A_CustomPunch(Random(1,21) + 19, true, CPF_PULLIN, "FistPuff", 44.0)
+		PUNG D 1 Offset(1,33);
+		PUNG D 1 Offset(2,35); //A_GiveInventory("StealthProp", 20)
+		PUNG D 1 Offset(4,39);
+		PUNG D 1 Offset(6,47);
+		PUNG D 1 Offset(9,63);
+		PUNG D 1 Offset(12,95);
+		TNT1 A 3;
+		PUNG A 1 Offset(128,72) A_ReFire;
+		PUNG A 1 Offset(64,45);
+		PUNG A 1 Offset(32,36);
+		PUNG A 1 Offset(16,33);
+		Goto Ready;
+		}
+}

@@ -1,0 +1,96 @@
+CLASS SilkyRaygun : Weapon
+{
+ 	Default
+	{
+		Weapon.SelectionOrder 40;
+	    Weapon.AmmoUse 1;
+		Weapon.AmmoGive 20;
+		Weapon.AmmoType "Clip";
+		Weapon.Kickback 100;
+		//Obituary "$OB_MPPISTOL";
+		//+WEAPON.WIMPY_WEAPON
+		//Inventory.Pickupmessage "$PICKUP_PISTOL_DROPPED";
+		//Tag "$TAG_PISTOL";
+	}
+	States
+	{
+	Ready:
+		PISG A 1 A_WeaponReady;
+		Loop;
+	Deselect:
+		PISG A 1 A_Lower;
+		Loop;
+	Select:
+		PISG A 1 A_Raise;
+		Loop;
+	Fire:
+		PISG A 4;
+		PISG B 6 bright A_FireProjectile("Silkylazerbeam",0,0,0,0);
+		PISG C 4;
+		PISG B 5 A_ReFire;
+		Goto Ready;
+	Flash:
+		PISF A 7 Bright A_Light1;
+		Goto LightDone;
+		PISF A 7 Bright A_Light1;
+		Goto LightDone;
+ 	Spawn:
+		PIST A -1;
+		Stop;
+	}
+}
+
+class Silkylazerbeam : Actor
+{
+	Default
+	{
+	Radius 13;
+	Height 8;
+	Speed 100;
+ 	Damage 5;
+	Projectile;
+	+RANDOMIZE
+	//+ZDOOMTRANS
+	//RenderStyle "Add";
+	Alpha 0.75;
+	//SeeSound "weapons/plasmaf";
+	//DeathSound "weapons/plasmax";
+	//Obituary "$OB_MPPLASMARIFLE"; // "%o was melted by %k's plasma gun."
+	}
+	States
+	{
+ 	Spawn:
+		LZER A 1 Bright;
+		Loop;
+	Death:
+		PLSE ABCDE 4 Bright;
+		Stop;
+	}
+}
+class SilkyFakebeam : Actor
+{
+	Default
+	{
+	Radius 13;
+	Height 8;
+	Speed 200;
+ 	//Damage 5;
+	Projectile;
+	//+RANDOMIZE
+	//+ZDOOMTRANS
+	RenderStyle "Add";
+	Alpha 0.75;
+	//SeeSound "weapons/plasmaf";
+	//DeathSound "weapons/plasmax";
+	//Obituary "$OB_MPPLASMARIFLE"; // "%o was melted by %k's plasma gun."
+	}
+	States
+	{
+ 	Spawn:
+		PNKL A 6 Bright;
+		Loop;
+	Death:
+		TNT1 A 4 Bright;
+		Stop;
+	}
+}

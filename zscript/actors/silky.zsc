@@ -1,0 +1,148 @@
+Class Silky: Doomplayer 
+{
+	Default {
+	Player.WeaponSlot 1, "Unarmed";
+	Player.WeaponSlot 2, "SilkyRaygun";
+	Player.StartItem "OverMax", 200;
+	Player.StartItem "SilkyRaygun";
+	Player.StartItem "Unarmed";	
+	Player.StartItem "Clip", 50;
+	//Player.StartItem "IsHuman", 1
+	Player.ViewHeight 44;
+	Player.AttackZOffset 18;
+	Player.RunHealth 14;
+	Player.ColorRange 0, 0;
+	Player.DisplayName "Silky";
+	Player.SoundClass "silky";
+	
+	}
+ states
+ {
+	Spawn:
+		silk A 1 A_JumpIfInventory("Helmet", 1, "Helmet");
+		loop;
+		
+	Helmet:
+		helm A 1;
+		loop;
+	//Spawn:
+		//"####" A 6
+		//"####" B 6
+		//"####" C 6
+		//"####" D 6
+		//goto spawn
+		
+	See:
+		"####" A 6;
+		"####" B 6;
+		"####" C 6;
+		"####" D 6;
+		loop;
+		
+	PAIN:
+		PANE A 5;
+		PANE B 5 A_PAIN;
+		PANE C 5;
+		PANE D 5;
+		"####" # 0 A_Jump(256, "Spawn"); // goto Spawn;
+		
+	DEATH:
+		DEAD A 5;
+		DEAD B 5 A_Playerscream;
+		DEAD C 5;
+		DEAD D 5;
+		DEAD E -1;
+		stop;
+		
+	XDEATH:
+		DIID A 3 a_spawndebris ("Silkygib1");
+		DIID B 3 A_StartSound ("silky/gibbed");
+		DIID C 3;
+		DIID D 3;
+		DIID E 3;
+		DIID F 3;
+		DIID G 3;
+		DIID H 3;
+		DIID I 10;
+		DIID J 2 a_spawndebris ("Bludsplatter");
+		DIID I 2;
+		DIID J 2 a_spawndebris ("Bludsplatter");
+		DIID I 10;
+		DIID J 2;
+		DIID I 100;
+		DIID J 1 a_spawndebris ("Bludsplatter");
+		DIID J 1 A_StartSound("silky/gag");
+		DIID I 4;
+		DIID J 2 a_spawndebris ("Bludsplatter");
+		DIID I 4;
+		DIID J 4;
+		DIID I 10;
+		DIID J 15;
+		DIID I -1;
+		stop;
+        
+}
+}
+
+Class Silkygib1 : Actor
+{
+default {
+	Mass 1;
+	Health 30;
+	Scale .75;
+	}
+	States
+	{
+		HGIB A -1;
+		LGIB C -1;
+		AGIB A -1;
+		GIBB A -1;
+		GIBB D -1;
+		Stop;
+	}
+}
+
+Class Bludsplatter : Actor
+{
+default {
+	Mass 1;
+	Health 30;
+	Scale 1;
+	}
+	States
+	{
+		BLUD A 5;
+		BLUD B 5;
+		BLUD C 20;
+		Stop;
+	}
+}
+/*Class Gib1
+{
+default{
+  Projectile;
+  Damage 0;
+  Speed 0;
+  +NOBLOCKMAP
+  +THRUACTORS
+  +NOTELEPORT
+  +BOUNCEONFLOORS
+  +BOUNCEONWALLS
+  -NOGRAVITY
+  BounceType Doom;
+  BounceFactor 0.6;
+  Gravity 0.5;
+  }
+  states
+  {
+  Spawn:
+    HGIB A 1 A_SpawnParticle("dark red",0,35,3,0,random(5,-5),random(5,-5));
+    Loop;
+  }
+} */
+Class Helmet : Inventory
+{
+Default{
+Inventory.MaxAmount 1;
+}
+}
