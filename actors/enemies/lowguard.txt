@@ -1,0 +1,32 @@
+Actor Lowguard 6969
+{
+
+  Radius 16
+  Height 57
+  //ProjectilePassHeight -16
+  //+SOLID
+
+
+states
+{
+	Spawn:
+		LOWG A -1
+		stop
+		
+}
+
+}
+
+Actor ship 6866
+{
+	Height 150
+	Radius 150
+	+NOGRAVITY
+	+SOLID
+States
+{
+Spawn:
+SHIP A -1
+stop
+}
+}
