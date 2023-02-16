@@ -1,0 +1,26 @@
+Model ship
+{
+Path "Models"
+Model 0 "ship.obj"
+Skin 0 "spaceship.png"
+scale 1 1 1
+frameindex SHIP A 0 0
+}
+
+Model Silkylazerbeam
+{
+Path "Models"
+Model 0 "laser1.obj"
+Skin 0 "lasertex.png"
+scale 10 10 10
+frameindex LZER A 0 0
+}
+
+//Model Guardlazerbeam
+//{
+//Path "Models"
+//Model 0 "laser1.obj"
+//Skin 0 "lasertex_lowguard.png"
+//scale 10 10 10
+//frameindex LZLG A 0 0
+//}

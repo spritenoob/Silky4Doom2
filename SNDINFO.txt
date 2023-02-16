@@ -1,0 +1,16 @@
+$playersound	player	Silky	*pain100	DSPLPAIN
+$playersound	player	Silky	*pain75	DSPAIN75
+$playersound	player	Silky	*pain50	DSPAIN50
+$playersound	player	Silky	*pain25	DSPAIN25
+$playersound	player	Silky	*grunt	DSPLOOF
+$playersound	player	Silky	*usefail DSNOWAY
+$playersound    player	Silky	*death	SLKDETH
+$playersound    player	Silky	*xdeath	SLKDIEHI
+$random	silky/gibbed { SGIB1 } 
+SGIB1 SLKGIBB
+$random silky/melee { slat1 slat2 slat3 }
+slat1 MELEE1
+slat2 MELEE2
+slat3 MELEE3
+$random silky/gag { SGAG1 }
+SGAG1 SLKCHOK2

@@ -1,0 +1,2 @@
+sprite SHIPA0, 1, 1 { Patch TNT1A0, 0, 0 }
+sprite LZERA0, 1, 1 { Patch TNT1A0, 0, 0 }

@@ -1,0 +1,62 @@
+mugshot "Normal", health2
+{
+	ST00 30;
+	ST03 3;
+	ST00 30;
+	ST01 30;
+	ST03 3;
+	ST02 30;
+	ST00 3;
+	ST01 30;
+	ST00 10;
+	ST03 3;
+	ST00 30;
+	ST01 30;
+	ST03 3;
+	ST02 30;
+	ST01 3;
+	ST00 50;
+	ST01 3;
+	ST00 10;
+	ST03 3;
+	ST02 14;
+	ST03 3;
+}
+
+mugshot "Ouch"
+{
+	OW00 1;
+	OW01 1;
+	OW02 20;
+}
+
+mugshot "Pain", health2, directional
+{
+	{PL00, PH00, PR00} 1;
+	{PL01, PH01, PR01} 1;
+	{PL02, PH02, PR02} 10;
+}
+mugshot "rampage", health2
+{
+	KL00 2;
+//	KL02 2;
+//	KL03 -1;
+}
+
+mugshot "grin", health2
+{
+	TB00 1;
+	TB01 1;
+	TB02 40;
+
+}
+
+mugshot "XDeath"
+{
+	XD00 -1;
+}
+
+mugshot "Captured"
+{
+	CAPT 100;
+}

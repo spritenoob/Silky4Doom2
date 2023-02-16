@@ -1,0 +1,9 @@
+//#include "actors/silky.txt"
+//#include "weapons/unarmed.txt"
+#include "actors/enemies/lowguard.txt"
+
+//Xaser's 100+ Bars.
+ACTOR OverMax : Inventory { Inventory.MaxAmount 200 }
+
+
+

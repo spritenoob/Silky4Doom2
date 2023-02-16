@@ -1,0 +1,9 @@
+version "4.10"
+
+#include "zscript/hud.zsc"
+#include "zscript/items.zsc"
+#include "zscript/weapons/unarmed.zsc"
+#include "zscript/weapons/silkyraygun.zsc"
+#include "zscript/actors/silky.zsc"
+//#include "zscript/weapons/beamwhip.zsc"
+//#include "zscript/ui/statusbars.zsc"

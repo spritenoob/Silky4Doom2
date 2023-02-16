@@ -1,0 +1,2 @@
+server int jgp_test = 0;
+server int jgp_test2 = 0;

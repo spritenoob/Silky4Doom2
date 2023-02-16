@@ -1,0 +1,6 @@
+clearplayerclasses
+
+addplayerclass Silky
+
+setslot 1 Unarmed
+setslot 2 SilkyRaygun

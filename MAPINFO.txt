@@ -1,0 +1,13 @@
+Gameinfo
+{
+	StatusBarClass = "SilkyHUD"
+}
+
+map MAP01 "TEST"
+{
+next = "SPACE"
+}
+map SPACE "Space Land"
+{
+
+}
